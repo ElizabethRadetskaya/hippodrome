@@ -1,35 +1,36 @@
-import static java.util.Objects.isNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static java.util.Objects.isNull;
 
 public class Horse {
 
-    // Створюємо логер для класу Horse з використанням SLF4J
-    private static final Logger logger = LoggerFactory.getLogger(Horse.class);
+    private static final Logger logger = LogManager.getLogger(Horse.class);
 
-    private final String name;
-    private final double speed;
+    private String name;
+    private double speed;
     private double distance;
 
+    public Horse(String name, double speed) {
+        this(name, speed, 0);
+    }
+
     public Horse(String name, double speed, double distance) {
-        // Перевірка на null для імені
-        if (isNull(name)) {
+        // Форматування часу для лога
+        if (name == null) {
             logger.error("Name is null");
             throw new IllegalArgumentException("Name cannot be null.");
-            // Перевірка на порожній рядок для імені
-        } else if (name.isBlank()) {
+        }
+
+        if (name.trim().isEmpty()) {
             logger.error("Name is blank");
             throw new IllegalArgumentException("Name cannot be blank.");
         }
-        // Перевірка на негативну швидкість
+
         if (speed < 0) {
             logger.error("Speed is negative");
             throw new IllegalArgumentException("Speed cannot be negative.");
         }
-        // Перевірка на негативну дистанцію
+
         if (distance < 0) {
             logger.error("Distance is negative");
             throw new IllegalArgumentException("Distance cannot be negative.");
@@ -39,13 +40,7 @@ public class Horse {
         this.speed = speed;
         this.distance = distance;
 
-        logger.debug("Створення Horse, ім'я : [{}], швидкість [{}]", this.name, this.speed);
-
-
-    }
-
-    public Horse(String name, double speed) {
-        this(name, speed, 0);
+        logger.debug("Створення Horse, ім'я [" + name + "], швидкість [" + speed + "]");
     }
 
     public String getName() {
@@ -61,10 +56,9 @@ public class Horse {
     }
 
     public void move() {
-        distance += speed * getRandomDouble(0.2, 0.9);
+        distance += speed * Math.random();
     }
-
     public static double getRandomDouble(double min, double max) {
-        return (Math.random() * (max - min)) + min;
+        return Math.random() * (max - min) + min;
     }
 }

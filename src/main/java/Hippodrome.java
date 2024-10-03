@@ -1,44 +1,45 @@
-import java.util.Collections;
+import java.text.SimpleDateFormat;
+
 import java.util.Comparator;
 import java.util.List;
 
-import static java.util.Objects.isNull;
 
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
-
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Hippodrome {
 
-    // Створюємо логер для класу Hippodrome з використанням SLF4J
-    private static final Logger logger = LoggerFactory.getLogger(Hippodrome.class);
-
+    private static final Logger logger = Logger.getLogger(Hippodrome.class.getName());
     private final List<Horse> horses;
 
     public Hippodrome(List<Horse> horses) {
-        // Якщо список коней є null, записуємо в лог і кидаємо виняток
-        if (horses == null) {
-            logger.error("Horses list is null");
-            throw new IllegalArgumentException("Horses cannot be null.");
-        }
+        // Форматування часу для лога
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        String currentTime = sdf.format(new Date());
 
-        // Якщо список коней порожній, записуємо в лог і кидаємо виняток
-        if (horses.isEmpty()) {
-            logger.error("Horses list is empty");
+        if (horses == null) {
+            // Логування помилки, якщо список коней null
+            logger.log(Level.SEVERE, currentTime + " ERROR Hippodrome: Horses list is null");
+            throw new IllegalArgumentException("Horses cannot be null.");
+        } else if (horses.isEmpty()) {
+            // Логування помилки, якщо список коней порожній
+            currentTime = sdf.format(new Date());
+            logger.log(Level.SEVERE, currentTime + " ERROR Hippodrome: Horses list is empty");
             throw new IllegalArgumentException("Horses cannot be empty.");
         }
 
         this.horses = horses;
 
-        // Лог з рівнем DEBUG (створення Hippodrome)
-        logger.debug("Створення Hippodrome, кількість коней: [{}]", horses.size());
+        // Логування інформації після успішного створення об'єкта Hippodrome
+        currentTime = sdf.format(new Date());
+        logger.log(Level.FINE, currentTime + " DEBUG Hippodrome: створення Hippodrome, коней [" + horses.size() + "]");
     }
 
     public List<Horse> getHorses() {
-        return Collections.unmodifiableList(horses);
+        return horses;
     }
 
     public void move() {
@@ -46,10 +47,8 @@ public class Hippodrome {
     }
 
     public Horse getWinner() {
-        Horse winner = horses.stream()
+        return horses.stream()
                 .max(Comparator.comparing(Horse::getDistance))
-                .get();
-        logger.info("Winner is {}", winner.getName());
-        return winner;
+                .orElseThrow();
     }
 }
